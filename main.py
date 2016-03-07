@@ -31,13 +31,17 @@ def mb_size(s):
 def test_numbers(n=1e6):
     small = natural_numbers(n, 1.0)
     large = natural_numbers(n, 1e6)
+    full = list(np.random.exponential(size=n))
 
     small_raw = mb_size(array.array("d", small).tostring())
     large_raw = mb_size(array.array("d", large).tostring())
+    full_raw = mb_size(array.array("d", full).tostring())
     small_binary = mb_size(zlib.compress(array.array("d", small).tostring()))
     large_binary = mb_size(zlib.compress(array.array("d", large).tostring()))
+    full_binary = mb_size(zlib.compress(array.array("d", full).tostring()))
     small_json = mb_size(zlib.compress(json.dumps(small)))
     large_json = mb_size(zlib.compress(json.dumps(large)))
+    full_json = mb_size(zlib.compress(json.dumps(full)))
     
     print("""
         Compressed json vs binary for small numbers (around 1.0):
@@ -60,6 +64,18 @@ def test_numbers(n=1e6):
             large_json, large_json/large_raw*100, 
             large_binary, large_binary/large_raw*100,
             large_json/large_binary
+        )
+    )
+
+    print("""
+        Compressed json vs binary for full precision doubles:
+            json {:.2f}mb json/raw {:.0f}%
+            binary {:.2f}mb binary/raw {:.0f}%
+            json/binary {:.2f}
+        """.format(
+            full_json, full_json/full_raw*100, 
+            full_binary, full_binary/full_raw*100,
+            full_json/full_binary
         )
     )
 
